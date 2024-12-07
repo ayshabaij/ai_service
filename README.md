@@ -36,3 +36,4 @@ image        file            (upload image)
 
 
 if already registered user , the name and successfull message will be shown . 
+Try different pic of the same user and it will do the face recognization. 
