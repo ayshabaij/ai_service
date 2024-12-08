@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #4A90E2;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #4A90E2;
+            color: white;
+        }
+        .attendance-list {
+            width: 80%;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Attendance Dashboard</h1>
+    <div class="attendance-list">
+        <table>
+            <thead>
+                <tr>
+                    <th>Employee Name</th>
+                    <th>Attendance Dates</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee, timestamps in attendance_data.items() %}
+                <tr>
+                    <td>{{ employee }}</td>
+                    <td>
+                        <ul>
+                            {% for timestamp in timestamps %}
+                            <li>{{ timestamp }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

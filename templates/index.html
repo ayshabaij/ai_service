@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Registration</title>
+    <style>
+        /* Reset some basic styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #4A90E2;
+        }
+
+        /* Form styles */
+        form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #357ABD;
+        }
+
+        #response {
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Employee Registration</h1>
+    <form id="registration-form" enctype="multipart/form-data">
+        <label for="name">Employee Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="image">Employee Photo:</label>
+        <input type="file" id="image" name="image" accept="image/*" required><br><br>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <div id="response"></div>
+
+    <script>
+        document.getElementById("registration-form").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData();
+            formData.append("name", document.getElementById("name").value);
+            formData.append("image", document.getElementById("image").files[0]);
+
+            try {
+                // Update fetch URL to match your backend (http://127.0.0.1:5000/register)
+                const response = await fetch('http://127.0.0.1:5000/register', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Handle the response and display the status or error
+                const data = await response.json();
+                const responseDiv = document.getElementById("response");
+
+                if (data.status) {
+                    responseDiv.innerHTML = `<p class="success">${data.status}</p>`;
+                } else if (data.error) {
+                    responseDiv.innerHTML = `<p class="error">${data.error}</p>`;
+                }
+            } catch (error) {
+                // Display error if fetch fails
+                document.getElementById("response").innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>

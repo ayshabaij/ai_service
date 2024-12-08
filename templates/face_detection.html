@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Attendance via Face Recognition</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4A90E2;
+        }
+
+        /* Camera feed container */
+        #video-container {
+            width: 60%; /* Adjust camera feed width */
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #fff;
+        }
+
+        video {
+            width: 100%;  /* Adjust video display size */
+            height: auto;
+        }
+
+        button {
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: block;
+            margin: 20px auto;
+        }
+
+        button:hover {
+            background-color: #357ABD;
+        }
+
+        #response {
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Employee Attendance via Face Recognition</h1>
+
+    <div id="video-container">
+        <video id="video" autoplay></video>
+    </div>
+
+    <button id="captureBtn">Capture and Mark Attendance</button>
+
+    <div id="response"></div>
+
+    <script>
+        const video = document.getElementById('video');
+        const captureBtn = document.getElementById('captureBtn');
+        const responseDiv = document.getElementById('response');
+
+        // Start the webcam feed
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(err => {
+                responseDiv.innerHTML = `<p class="error">Error accessing webcam: ${err}</p>`;
+            });
+
+        captureBtn.addEventListener('click', async function() {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Draw the current frame from video onto the canvas
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Convert canvas to base64 image
+            const imageData = canvas.toDataURL('image/jpeg');
+
+            // Send the captured image to the server for recognition
+            try {
+                const response = await fetch('http://127.0.0.1:5000/recognize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ image: imageData })
+                });
+
+                const data = await response.json();
+
+                if (data.status) {
+                    responseDiv.innerHTML = `<p class="success">${data.status}</p>`;
+                    // Redirect to the dashboard after successful recognition
+                    window.location.href = "/dashboard";
+                } else if (data.error) {
+                    responseDiv.innerHTML = `<p class="error">${data.error}</p>`;
+                    // Redirect to the registration page if face is not recognized
+                    window.location.href = "/register";
+                }
+            } catch (error) {
+                responseDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
